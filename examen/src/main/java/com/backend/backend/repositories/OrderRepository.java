@@ -13,8 +13,9 @@ import java.util.List;
 public interface OrderRepository extends CrudRepository<OrderDTO,Long>{
     @Query("SELECT o FROM OrderDTO o WHERE " +
             "(:status IS NULL OR o.status = :status) AND " +
-            "(:date IS NULL OR o.createdAt = :date) AND " +
+            "(:starDate IS NULL OR o.createdAt >= :starDate) AND " +
+            "(:endDate IS NULL OR o.createdAt <= :endDate) AND " +
             "(:origin IS NULL OR o.origin = :origin) AND " +
             "(:destination IS NULL OR o.destination = :destination)")
-    List<OrderDTO> findByFilters(String status, String origin, String destination, LocalDateTime date);
+    List<OrderDTO> findByFilters(String status, String origin, String destination, LocalDateTime starDate, LocalDateTime endDate);
 }

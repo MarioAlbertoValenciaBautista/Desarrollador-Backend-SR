@@ -41,8 +41,8 @@ public class OrderService {
         return orderRepository.findById(id).orElse(null);
     }
 
-    public ArrayList<OrderDTO> listOrders(String status, String origin, String destination, LocalDateTime date) {
-        return (ArrayList<OrderDTO>) orderRepository.findByFilters(status, origin, destination, date);
+    public ArrayList<OrderDTO> listOrders(String status, String origin, String destination, LocalDateTime starDate, LocalDateTime endDate) {
+        return (ArrayList<OrderDTO>) orderRepository.findByFilters(status, origin, destination, starDate, endDate);
     }
 
 
@@ -86,7 +86,4 @@ public class OrderService {
        return statusUpdated;
     }
 
-    private void validatePlaces(OrderDTO orderDTO, OrderDTO auxOrderDTO) {
-
-    }
 }

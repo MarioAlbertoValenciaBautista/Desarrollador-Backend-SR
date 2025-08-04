@@ -16,6 +16,11 @@ public class DriverService {
 
     public DriverDTO createDriver(DriverDTO driverDTO) {
         // Logic to create a driver
+        if(driverDTO.getName() == null || driverDTO.getName().isEmpty()
+                || driverDTO.getLicenseNumber() == null || driverDTO.getLicenseNumber().isEmpty()
+                || driverDTO.getActive() == null) {
+            return null;
+        }
         return driverRepository.save(driverDTO);
     }
 

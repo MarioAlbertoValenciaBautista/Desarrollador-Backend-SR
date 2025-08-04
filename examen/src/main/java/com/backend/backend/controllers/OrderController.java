@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -33,11 +35,16 @@ public class OrderController {
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String origin,
             @RequestParam(required = false) String destination,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") String date
+            @RequestParam(required = false) String date
     ) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDateTime localDate = LocalDateTime.parse(date, formatter);
-        return orderService.listOrders(status, origin, destination, localDate);
+        LocalDateTime starDate = null;
+        LocalDateTime endDate = null;
+        if(date != null){
+            LocalDate localDate = LocalDate.parse(date);
+            starDate = localDate.atStartOfDay();
+            endDate = localDate.atTime(23, 59, 59);
+        }
+        return orderService.listOrders(status, origin, destination, starDate, endDate);
     }
 
 
