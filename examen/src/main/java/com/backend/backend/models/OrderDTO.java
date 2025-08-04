@@ -1,14 +1,17 @@
 package com.backend.backend.models;
 
 
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
-@Table(name = "order")
+@Entity
+@Table(name = "orders")
 public class OrderDTO {
 
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(unique = true, nullable = false)
     private Long id;
     private String status;
     private String origin;
