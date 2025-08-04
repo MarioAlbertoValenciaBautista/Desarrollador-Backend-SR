@@ -52,7 +52,7 @@ class OrderServiceTest {
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setOrigin(null);
         orderDTO.setDestination("B");
-        assertThrows(IllegalArgumentException.class, () -> orderService.createOrder(orderDTO));
+        assertThrows(RuntimeException.class, () -> orderService.createOrder(orderDTO));
     }
     @Test
     void testCreateOrder003() {

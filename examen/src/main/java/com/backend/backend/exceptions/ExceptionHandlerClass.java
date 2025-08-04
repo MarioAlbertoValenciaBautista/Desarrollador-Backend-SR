@@ -21,10 +21,11 @@ public class ExceptionHandlerClass {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception ex) {
-        // Log the exception (optional)
-        // logger.error("An error occurred: ", ex);
-
-        // Return a generic error response
         return new ResponseEntity<>("An error occurred with this message: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
+        return new ResponseEntity<>("A runtime error occurred with this message: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

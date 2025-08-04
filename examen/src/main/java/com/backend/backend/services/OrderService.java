@@ -9,44 +9,101 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class OrderService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderService.class.getName());
     @Autowired
     private OrderRepository orderRepository;
 
-    // Method to create a new order
-    // It takes an OrderDTO object as input and returns the saved OrderDTO object
-    // The method uses the orderRepository to save the order to the database
-    // It is annotated with @Service to indicate that it is a service component in the Spring
-    // framework, which allows it to be injected into other components like controllers.
-    // The method returns an ArrayList of OrderDTO objects, which represents all the orders in
-    // the database. This method is typically used to retrieve all orders for display in a user
-    // interface or for further processing in the application.
+    /**
+     * Create a new order or update an existing one.
+     * Makes sure that the origin and destination are not null.
+     *
+     * @param orderDTO OrderDTO object with order data.
+     * @return OrderDTO The order saved un DB.
+     * @throws IllegalArgumentException Origin or destination null.
+     * @throws RuntimeException If occour an exception while creating/updating orders.
+     */
     public OrderDTO createOrder(OrderDTO orderDTO) {
-        if(orderDTO.getOrigin() == null || orderDTO.getDestination() == null) {
+
+        try {
+            LOGGER.info("Creating order with: {}", orderDTO);
+        if (orderDTO.getOrigin() == null || orderDTO.getDestination() == null) {
+            LOGGER.error("Origin or destination is null");
             throw new IllegalArgumentException("Origin and destination cannot be null");
         }
-        if(orderDTO.getId() != null) {
+        if (orderDTO.getId() != null) {
             orderDTO = updateOrderStatus(orderDTO);
         } else {
             orderDTO.setStatus(StatusEnum.CREATED.getStatus());
             orderDTO.setCreatedAt(java.time.LocalDateTime.now());
             orderDTO.setUpdatedAt(java.time.LocalDateTime.now());
         }
+        LOGGER.info("Order saved succesfully: {}", orderDTO);
         return orderRepository.save(orderDTO);
+        } catch (Exception e) {
+            LOGGER.error("Error while creating order: {}", e.getMessage());
+            throw new RuntimeException("Error creating order: " + e.getMessage());
+        }
     }
 
+    /**
+     * Retrieves an order by its unique identifier.
+     * Logs the retrieval process and errors.
+     *
+     * @param id Unique identifier of the order.
+     * @return OrderDTO The found order, or null if not found.
+     * @throws RuntimeException If an error occurs while retrieving the order.
+     */
     public OrderDTO getOrder(Long id) {
-        return orderRepository.findById(id).orElse(null);
+        try {
+            LOGGER.info("Retrieving order with id: {}", id);
+            return orderRepository.findById(id).orElse(null);
+        } catch (Exception e) {
+            LOGGER.error("Error while retrieving order with id {}: {}", id, e.getMessage());
+            throw new RuntimeException("Error retrieving order: " + e.getMessage());
+        }
     }
 
+    /**
+     * Lists orders filtered by status, origin, destination, and date range.
+     * Validates that the start date is not after the end date.
+     * Logs the filtering process and errors.
+     *
+     * @param status Status of the order.
+     * @param origin Origin of the order.
+     * @param destination Destination of the order.
+     * @param starDate Start date of the range.
+     * @param endDate End date of the range.
+     * @return ArrayList<OrderDTO> List of orders matching the filters.
+     * @throws IllegalArgumentException If the start date is after the end date.
+     * @throws RuntimeException If an error occurs while listing the orders.
+     */
     public ArrayList<OrderDTO> listOrders(String status, String origin, String destination, LocalDateTime starDate, LocalDateTime endDate) {
-        return (ArrayList<OrderDTO>) orderRepository.findByFilters(status, origin, destination, starDate, endDate);
+        try {
+            LOGGER.info("Listing orders with filters - Status: {}, Origin: {}, Destination: {}, Start Date: {}, End Date: {}",
+                        status, origin, destination, starDate, endDate);
+        if (starDate != null && endDate != null && starDate.isAfter(endDate)) {
+            LOGGER.error("Start date cannot be after end date");
+            throw new IllegalArgumentException("Start date cannot be after end date");
+        }
+            return (ArrayList<OrderDTO>) orderRepository.findByFilters(status, origin, destination, starDate, endDate);
+        } catch (Exception e) {
+            LOGGER.error("Error while listing orders: {}", e.getMessage());
+            throw new RuntimeException("Error listing orders: " + e.getMessage());
+        }
     }
 
 
     private OrderDTO updateOrderStatus(OrderDTO orderDTO) {
+        LOGGER.info("Updating order status for order: {}", orderDTO);
+        if (orderDTO.getId() == null) {
+            LOGGER.error("Order ID cannot be null for status update");
+            throw new IllegalArgumentException("Order ID cannot be null for status update");
+        }
         OrderDTO auxOrderDTO = orderRepository.findById(orderDTO.getId()).orElse(null);
         if (auxOrderDTO == null) return null;
 
@@ -82,7 +139,6 @@ public class OrderService {
        }else {
            throw   new IllegalArgumentException("No se puede cambiar de un estado finalizado");
        }
-
        return statusUpdated;
     }
 

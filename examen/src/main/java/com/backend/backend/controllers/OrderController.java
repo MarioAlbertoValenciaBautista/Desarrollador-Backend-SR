@@ -20,16 +20,38 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+    /**
+     * Creates a new order using the provided OrderDTO.
+     *
+     * @param orderDTO OrderDTO object containing order data.
+     * @return OrderDTO The saved order.
+     */
     @PostMapping
     public OrderDTO createOrder(@RequestBody OrderDTO orderDTO) {
         return orderService.createOrder(orderDTO);
     }
 
+    /**
+     * Retrieves an order by its unique identifier.
+     *
+     * @param id Unique identifier of the order.
+     * @return OrderDTO The found order, or null if not found.
+     */
     @GetMapping("/{id}")
     public OrderDTO getOrder(@PathVariable Long id) {
         return orderService.getOrder(id);
     }
 
+    /**
+     * Lists orders filtered by status, origin, destination, and date.
+     * If a date is provided, filters orders for that specific day.
+     *
+     * @param status Status of the order (optional).
+     * @param origin Origin of the order (optional).
+     * @param destination Destination of the order (optional).
+     * @param date Date to filter orders (optional, format: yyyy-MM-dd).
+     * @return List<OrderDTO> List of orders matching the filters.
+     */
     @GetMapping
     public List<OrderDTO> listOrders(
             @RequestParam(required = false) String status,
