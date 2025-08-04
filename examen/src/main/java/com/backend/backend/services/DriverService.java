@@ -30,7 +30,7 @@ public class DriverService {
                     || driverDTO.getLicenseNumber() == null || driverDTO.getLicenseNumber().isEmpty()
                     || driverDTO.getActive() == null) {
                 LOGGER.info("Driver creation failed due to missing fields: {}", driverDTO);
-                throw new IllegalArgumentException("Missing required fields");
+                return null;
             }
             LOGGER.info("Driver creation succeeded: {}", driverDTO);
             return driverRepository.save(driverDTO);

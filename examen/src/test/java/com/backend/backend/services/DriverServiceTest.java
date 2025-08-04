@@ -41,7 +41,7 @@ public class DriverServiceTest {
         driver1.setName("Driver 1");
         driver1.setActive(true);
         DriverDTO createdDriver = driverService.createDriver(driver1);
-        assert  createdDriver == null;
+        assert createdDriver == null;
     }
 
     @Test
