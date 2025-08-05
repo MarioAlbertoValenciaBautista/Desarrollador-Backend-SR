@@ -39,7 +39,7 @@ public class AssignService {
                         assignDTO = new AssignDTO();
                         assignDTO.setDriverId(driverDTO.getId());
                         assignDTO.setOrderId(orderDTO.getId());
-                        assignDTO.setDriverName(driverDTO.getName().isEmpty() ? driverDTO.getName() : "DRIVER NOT FOUND");
+                        assignDTO.setDriverName(driverDTO.getName().isEmpty() ? "DRIVER NOT FOUND" :driverDTO.getName());
                     } else {
                         throw new IllegalArgumentException("Order is not in a valid state for assignment");
                      }
